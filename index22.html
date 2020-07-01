@@ -1,0 +1,60 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="utf-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+
+    <title>Day 2, Task 2.1</title>
+
+    <link rel="stylesheet" href="style2-2.css" />
+
+    <script src="script2-2.js" defer></script>
+  </head>
+  <body>
+    <header>
+      <br />
+      <p align="right"><em>Цивинская Анна (практика 2020, день 2)</em></p>
+    </header>
+    <h2>Введите параметры:</h2>
+
+    <table>
+      <tr>
+        <td>F(x, y) =</td>
+        <td><input type="text" id="f" size="40" value="x*x+y*y-81" /></td>
+      </tr>
+      <tr>
+        <td>x min =</td>
+        <td><input type="text" id="xmin" size="40" value="-10" /></td>
+      </tr>
+      <tr>
+        <td>x max =</td>
+        <td><input type="text" id="xmax" size="40" value="10" /></td>
+      </tr>
+      <tr>
+        <td>y min =</td>
+        <td><input type="text" id="ymin" size="40" value="-10" /></td>
+      </tr>
+      <tr>
+        <td>y max =</td>
+        <td><input type="text" id="ymax" size="40" value="10" /></td>
+      </tr>
+      <tr>
+        <td>Ширина:</td>
+        <td><input type="text" id="W" size="40" value="512" /></td>
+      </tr>
+      <tr>
+        <td>Высота:</td>
+        <td><input type="text" id="H" size="40" value="512" /></td>
+      </tr>
+    </table>
+
+    <p><input type="button" value="Расчитать" onclick="count();" /></p>
+
+    <p><canvas id="canvas" width="512" height="512"></canvas></p>
+
+    <div class="glitchButton" style="position:fixed;top:20px;right:20px;"></div>
+    <script src="https://button.glitch.me/button.js" defer></script>
+  </body>
+</html>
+
