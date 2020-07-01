@@ -1,5 +1,5 @@
-var graph = document.getElementById("canvas");
-var ctx = graph.getContext("2d");
+var pict = document.getElementById("canvas");
+var ctx = pict.getContext("2d");
 
 class Graphics1d {
   constructor(
@@ -33,12 +33,14 @@ class Graphics1d {
     return this.values;
   }
   draw(
-    dots = "red",
-    axis = "green",
+    dots = "#B22222", //red
+    axis = "#9ACD32", //green
     zeros = "indigo",
     gaps = "magenta",
-    bg = "gray"
+    bg = "#DCDCDC" //grey
   ) {
+    pict.width = this.W;
+    pict.height = this.H;
     var drawed = new Graphics1d();
     if (this.ev == 0) this.evaluate();
     let stepx = this.W / (-this.xmin + this.xmax);
@@ -77,47 +79,36 @@ class Graphics1d {
       a <= this.xmax;
       a += (-this.xmin + this.xmax) / this.W
     ) {
-      if (this.values[a - (-this.xmin + this.xmax) * this.W] * this.values[a] < 0 ) {
-        ctx.stroke();
-        ctx.closePath();
-        ctx.beginPath();
-        ctx.fillStyle = zeros;
-        ctx.arc(
-          zerox + a * stepx,
-          zeroy - stepy * this.values[a - 0.1],
-          3, 0, 180
-        );
-        ctx.fill();
-        ctx.closePath();
-        ctx.beginPath();
-      } else {
+        if (a!=this.xmin)
+            {
+                let cur = this.values[a];
+                let prev = this.values[a - (-this.xmin + this.xmax) / this.W] ;
+                if(cur*prev < 0 && (Math.abs(cur - prev) > this.ymax - this.ymin)) {
+                    console.log(cur+" "+prev);
+                    ctx.stroke();
+                    ctx.closePath();
+                    ctx.beginPath();
+                    ctx.fillStyle = gaps;
+                    ctx.arc(zerox + a  * stepx, zeroy - stepy * this.ymax, stepx / 10, 0, 180);
+                    ctx.arc(zerox + a  * stepx, zeroy - stepy * this.ymin, stepx / 10, 0, 180);
+                    ctx.fill();
+                    ctx.closePath();
+                    ctx.beginPath();
+                } else ctx.lineTo(zerox + a * stepx, zeroy - this.values[a] * stepy);
+            }else {
         ctx.lineTo(zerox + a * stepx, zeroy - this.values[a] * stepy);
       }
     }
     ctx.stroke();
     ctx.closePath();
-    ctx.font = stepx + " serif";
-    ctx.fillStyle = "black";
-    let mx = "(" + this.xmax + ", " + this.ymax + ")";
-    let mn = "(" + this.xmin + ", " + this.ymin + ")";
-    ctx.fillText(
-      mx,
-      zerox + this.xmax * stepx - stepx * mx.length,
-      zeroy + this.ymin * stepy + stepx
-    );
-    ctx.fillText(
-      mn,
-      zerox + this.xmin * stepx,
-      zeroy + this.ymax * stepy - stepy
-    );
   }
 
   autodraw(
-    dots = "red",
-    axis = "green",
+    dots = "#B22222", //red
+    axis = "#9ACD32", //green
     zeros = "indigo",
     gaps = "magenta",
-    bg = "gray"
+    bg = "#DCDCDC" //grey
   ) {
     this.ymin = this.f(this.xmin);
     this.ymax = this.f(this.xmax);
@@ -125,6 +116,47 @@ class Graphics1d {
     this.draw(dots, axis, zeros, gaps, bg);
   }
 }
-
+function replaceSequence(str){
+ str = str.split("sin").join("Math.sin");
+ str = str.split("cos").join("Math.cos");
+ str = str.split("tan").join("Math.tan");
+ str = str.split("asin").join("Math.asin");
+ str = str.split("acos").join("Math.acos");
+ str = str.split("atan").join("Math.atan");
+ str = str.split("ln").join("Math.log");
+ str = str.split("ln2").join("Math.LN2");
+ str = str.split("ln10").join("Math.LN10");
+ str = str.split("log2e").join("Math.LOG2E");
+ str = str.split("lg").join("logab");
+ str = str.split("log10e").join("Math.LOG10E");
+ str = str.split("sqrt").join("Math.sqrt");
+ str = str.split("sqrt2").join("Math.SQRT2");
+ str = str.split("sqrt1_2").join("Math.SQRT1_2");
+ str = str.split("pow").join("Math.pow");
+ str = str.split("exp").join("Math.exp");
+ str = str.split("max").join("Math.max");
+ str = str.split("min").join("Math.min");
+ str = str.split("abs").join("Math.abs");
+ str = str.split("ceil").join("Math.ceil");
+ str = str.split("floor").join("Math.floor");
+ str = str.split("round").join("Math.round");
+ str = str.split("pi").join("Math.PI");
+ str = str.split("e").join("Math.E");
+ return str;
+}
 var g = new Graphics1d();
 g.draw();
+function count(){
+  var xmin = parseFloat(document.getElementById("xmin").value);
+  var xmax = parseFloat(document.getElementById("xmax").value);
+  var ymin = parseFloat(document.getElementById("ymin").value);
+  var ymax = parseFloat(document.getElementById("ymax").value);
+  var W = parseFloat(document.getElementById("W").value);
+  var H = parseFloat(document.getElementById("H").value);
+  var f = document.getElementById("f").value;
+  f = replaceSequence(f);
+  console.log(f);
+  var m = function(x){return eval(f)};
+  g = new Graphics1d(xmin, xmax, ymin, ymax, W, H, m);
+  g.draw();
+}
