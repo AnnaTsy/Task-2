@@ -1,3 +1,5 @@
+/*   Цивинская Анна, задание 2.1    */
+
 var pict = document.getElementById("canvas");
 var ctx = pict.getContext("2d");
 
