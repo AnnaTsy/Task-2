@@ -1,3 +1,5 @@
+/*   Цивинская Анна, задание 2.2    */
+
 // x*x+(y-abs(x))*(y-pow(x*x, 1/3))=1000
 var pict = document.getElementById("canvas");
 var ctx = pict.getContext("2d");
