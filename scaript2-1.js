@@ -23,19 +23,21 @@ class Graphics1d {
     this.ev = 0;
   }
   evaluate() {
-    this.values = new Map();
-    for (
-      let a = this.xmin;
-      a <= this.xmax;
-      a += (-this.xmin + this.xmax) / this.W
-    ) {
-      this.values[a] = this.f(a);
+    let count = 0;
+    var mxe = [this.f(this.xmin), this.f(this.xmax)];
+    this.fvalues = new Float64Array(this.H * this.W);
+    this.dots = new Array(this.H * this.W);
+    for (let a = this.xmin; a <= this.xmax; a += (-this.xmin + this.xmax) / this.W) {
+      this.dots[count] = a;
+      this.fvalues[count++] = this.f(a);
+      mxe[1]  = Math.max(this.fvalues[count - 1], mxe[1]);
+      mxe[0]  = Math.min(this.fvalues[count - 1], mxe[0]);
     }
     this.ev = 1;
-    return this.values;
+    return mxe;
   }
   draw(
-    dots = "#B22222", //red
+    dots = "#FF4500", //red
     axis = "#9ACD32", //green
     zeros = "indigo",
     gaps = "magenta",
@@ -47,8 +49,8 @@ class Graphics1d {
     if (this.ev == 0) this.evaluate();
     let stepx = this.W / (-this.xmin + this.xmax);
     let stepy = this.H / (-this.ymin + this.ymax);
-    let zerox = Math.abs(this.xmin) * stepx;
-    let zeroy = Math.abs(this.ymin) * stepy;
+    let zerox = -(this.xmin) * stepx;
+    let zeroy = this.ymax * stepy;
     ctx.fillStyle = bg;
     ctx.fillRect(0, 0, g.W, g.H);
     ctx.beginPath();
@@ -76,29 +78,48 @@ class Graphics1d {
     ctx.lineWidth = 1;
     ctx.strokeStyle = dots;
     ctx.moveTo(zerox + this.xmin * stepx, zeroy - this.f(this.xmin) * stepy);
-    for (
-      let a = this.xmin;
-      a <= this.xmax;
-      a += (-this.xmin + this.xmax) / this.W
-    ) {
-        if (a!=this.xmin)
-            {
-                let cur = this.values[a];
-                let prev = this.values[a - (-this.xmin + this.xmax) / this.W] ;
-                if(cur*prev < 0 && (Math.abs(cur - prev) > this.ymax - this.ymin)) {
-                    console.log(cur+" "+prev);
-                    ctx.stroke();
-                    ctx.closePath();
-                    ctx.beginPath();
-                    ctx.fillStyle = gaps;
-                    ctx.arc(zerox + a  * stepx, zeroy - stepy * this.ymax, stepx / 10, 0, 180);
-                    ctx.arc(zerox + a  * stepx, zeroy - stepy * this.ymin, stepx / 10, 0, 180);
-                    ctx.fill();
-                    ctx.closePath();
-                    ctx.beginPath();
-                } else ctx.lineTo(zerox + a * stepx, zeroy - this.values[a] * stepy);
-            }else {
-        ctx.lineTo(zerox + a * stepx, zeroy - this.values[a] * stepy);
+      for (let a = 0; a <= this.H * this.W; a++) {
+      if (this.dots[a] != this.xmin) {
+        let cur = this.fvalues[a];
+        let prev = this.fvalues[a - 1];
+        if (cur * prev <= 0) {
+          if (Math.abs(cur - prev) > this.ymax - this.ymin) {
+            ctx.stroke();
+            ctx.closePath();
+            ctx.beginPath();
+            ctx.fillStyle = gaps;
+            ctx.arc(
+              zerox + this.dots[a] * stepx,
+              zeroy - stepy * this.ymax,
+              stepx / 10,
+              0,
+              180
+            );
+            ctx.arc(
+              zerox + this.dots[a] * stepx,
+              zeroy - stepy * this.ymin,
+              stepx / 10,
+              0,
+              180
+            );
+            ctx.fill();
+            ctx.closePath();
+            ctx.beginPath();
+          } else {
+            ctx.stroke();
+            ctx.closePath();
+            ctx.beginPath();
+            ctx.fillStyle = zeros;
+            ctx.arc(zerox + this.dots[a] * stepx, zeroy, stepx / 10, 0, 180);
+            ctx.fill();
+            ctx.closePath();
+            ctx.beginPath();
+            ctx.moveTo(zerox + this.dots[a - 1] * stepx, zeroy - this.fvalues[a - 1] * stepy);
+            ctx.lineTo(zerox + this.dots[a] * stepx, zeroy - this.fvalues[a] * stepy);
+          }
+        } else {
+          ctx.lineTo(zerox + this.dots[a] * stepx,zeroy - this.fvalues[a] * stepy);
+        }
       }
     }
     ctx.stroke();
@@ -106,16 +127,19 @@ class Graphics1d {
   }
 
   autodraw(
-    dots = "#B22222", //red
+    dots = "#FF4500", //red
     axis = "#9ACD32", //green
     zeros = "indigo",
     gaps = "magenta",
     bg = "#DCDCDC" //grey
   ) {
-    this.ymin = this.f(this.xmin);
-    this.ymax = this.f(this.xmax);
-
+    console.log(this.ymin, this.ymax);
+    if (this.ev == 0) 
+      var mx = this.evaluate();
+    this.ymin = Math.min(mx[0],mx[1]) ;
+    this.ymax = Math.max(mx[0],mx[1]);
     this.draw(dots, axis, zeros, gaps, bg);
+    console.log(this.ymin, this.ymax);
   }
 }
 function replaceSequence(str){
