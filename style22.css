@@ -3,8 +3,9 @@
 body {
   font-family: helvetica, arial, sans-serif;
   margin: 2em;
-  background-color:#F5F5F5	;
+  background-color: #F5F5F5;
 }
-/*canvas{
-  border: solid 1px green;
-}*/
+INPUT[type="button"]{
+    background-color: #FFFFFF;
+    color: #000000;
+}
